@@ -5,6 +5,8 @@ import { getSpecifiedPhoto } from '../actions/unsplash';
 import GoBackButton from './goBackButton';
 import LoadingPhotoSkeleton from './loading';
 
+export const dynamicParams = true;
+
 const PhotoDetailPage = async ({ params }: PhotoDetailPageProps) => {
   const photoID = (await params).photoID;
 
@@ -40,8 +42,4 @@ export default PhotoDetailPage;
 
 interface PhotoDetailPageProps {
   params: Promise<{ photoID: string }>;
-}
-
-export async function generateStaticParams() {
-  return [];
 }
