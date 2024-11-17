@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 const useGlobalStore = create<GlobalState>()(set => ({
-  searchKeyword: undefined,
+  searchKeyword: '',
   page: 1,
   pageSize: 10,
   setSearchKeyword: newSearchKeyword => set({ searchKeyword: newSearchKeyword }),
@@ -14,7 +14,7 @@ const useGlobalStore = create<GlobalState>()(set => ({
 export default useGlobalStore;
 
 interface GlobalState {
-  searchKeyword?: string;
+  searchKeyword: string;
   page: number;
   pageSize: number;
   setSearchKeyword: (newSearchKeyword: string) => void;
