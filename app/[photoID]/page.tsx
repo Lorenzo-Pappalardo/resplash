@@ -41,3 +41,7 @@ export default PhotoDetailPage;
 interface PhotoDetailPageProps {
   params: Promise<{ photoID: string }>;
 }
+
+export async function generateStaticParams() {
+  return [];
+}
