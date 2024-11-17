@@ -1,16 +1,18 @@
 'use client';
 
-import { Box, Grid2 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Box, Grid2, TablePagination, Typography } from '@mui/material';
+import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import { searchPhotos } from '../actions/unsplash';
 
 const Carousel = () => {
   const [masonryLikeEnabled, setMasonryLikeEnabled] = useState<boolean>(false);
   const [photos, setPhotos] = useState<Awaited<ReturnType<typeof searchPhotos>>>();
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   useEffect(() => {
     const fetchData = async () => {
-      const apiResult = await searchPhotos();
+      const apiResult = await searchPhotos(page, pageSize);
 
       if (apiResult !== undefined) {
         setPhotos(apiResult);
@@ -18,7 +20,7 @@ const Carousel = () => {
     };
 
     fetchData();
-  }, []);
+  }, [page, pageSize]);
 
   const processData = (data: typeof photos) => {
     if (data === undefined) {
@@ -34,12 +36,46 @@ const Carousel = () => {
     return masonryLike;
   };
 
+  const handlePageChange = (event: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage + 1);
+  };
+
+  const handlePageSizeChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    let value: string | number = event.target.value;
+
+    if (typeof value === 'string') {
+      value = Number.parseInt(value);
+    }
+
+    setPageSize(value);
+  };
+
   return (
-    <Box padding={4}>
+    <Box padding="0 2rem">
+      <Box
+        display="flex"
+        gap={4}
+        padding="1rem 0 1rem"
+        justifyContent="space-between"
+        alignItems="center">
+        <Typography variant="h6">Showing results from the Editorial feed</Typography>
+        <Box display="flex" gap={4}>
+          <TablePagination
+            component="div"
+            count={photos?.total ?? 10}
+            page={page}
+            onPageChange={handlePageChange}
+            rowsPerPage={pageSize}
+            onRowsPerPageChange={handlePageSizeChange}
+            labelRowsPerPage="Photos per page:"
+            rowsPerPageOptions={[10, 15, 20, 25, 30]}
+          />
+        </Box>
+      </Box>
       <Grid2 container flex={1} spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
         {masonryLikeEnabled
           ? processData(photos).map((column, i) => (
-              <Box
+              <Grid2
                 key={i}
                 display="flex"
                 flexDirection="column"
@@ -48,23 +84,31 @@ const Carousel = () => {
                 position="relative">
                 {column.map(photo => (
                   <img
-                    key={photo.id}
                     src={photo.urls.regular}
                     alt={photo.description ?? photo.id}
                     width="100%"></img>
                 ))}
-              </Box>
+              </Grid2>
             ))
           : photos?.results.map(photo => (
-              <Grid2 key={photo.id} size={{ xs: 2, sm: 4, md: 4 }}>
+              <Grid2 key={photo.id} size={{ xs: 4, sm: 4, md: 3 }}>
                 <img
-                  key={photo.id}
                   src={photo.urls.regular}
                   alt={photo.description ?? photo.id}
                   width="100%"></img>
               </Grid2>
             ))}
       </Grid2>
+      <Box display="flex" justifyContent="center">
+        <TablePagination
+          component="div"
+          count={photos?.total ?? 10}
+          page={page}
+          onPageChange={handlePageChange}
+          rowsPerPage={pageSize}
+          onRowsPerPageChange={handlePageSizeChange}
+        />
+      </Box>
     </Box>
   );
 };

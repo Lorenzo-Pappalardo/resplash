@@ -7,12 +7,13 @@ const unsplashClient = createApi({
   }
 });
 
-export const searchPhotos = async (): Promise<
-  undefined | Awaited<ReturnType<typeof unsplashClient.photos.list>>['response']
-> => {
+export const searchPhotos = async (
+  page = 1,
+  pageSize = 10
+): Promise<undefined | Awaited<ReturnType<typeof unsplashClient.photos.list>>['response']> => {
   const data = await unsplashClient.photos.list({
-    page: 1,
-    perPage: 50
+    page,
+    perPage: pageSize
   });
 
   if (data.type === 'success') {
