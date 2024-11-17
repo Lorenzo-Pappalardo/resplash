@@ -83,6 +83,7 @@ const Carousel = () => {
                 position="relative">
                 {column.map(photo => (
                   <img
+                    key={photo.id}
                     src={photo.urls.regular}
                     alt={photo.description ?? photo.id}
                     width="100%"></img>
