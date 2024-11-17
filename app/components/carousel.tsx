@@ -1,9 +1,13 @@
+'use client';
+
 import { Grid2 } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import { searchPhotos } from '../actions/unsplash';
 import useGlobalStore from '../state';
 
 const Carousel = ({ photos }: CarouselProps) => {
   const globalState = useGlobalStore();
+  const router = useRouter();
 
   const processData = (data: typeof photos, columnsCount: number = 3) => {
     if (data === undefined) {
@@ -23,6 +27,10 @@ const Carousel = ({ photos }: CarouselProps) => {
     return masonryLike;
   };
 
+  const handleOnClick = (photoID: string) => {
+    router.push(`/${photoID}`);
+  };
+
   return (
     <Grid2 container flex={1} spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
       {globalState.masonryLikeEnabled
@@ -39,13 +47,24 @@ const Carousel = ({ photos }: CarouselProps) => {
                   key={photo.id}
                   src={photo.urls.regular}
                   alt={photo.description ?? photo.id}
-                  width="100%"></img>
+                  width="100%"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    handleOnClick(photo.id);
+                  }}></img>
               ))}
             </Grid2>
           ))
         : photos?.results.map(photo => (
             <Grid2 key={photo.id} size={{ xs: 4, sm: 4, md: 4 }}>
-              <img src={photo.urls.regular} alt={photo.description ?? photo.id} width="100%"></img>
+              <img
+                src={photo.urls.regular}
+                alt={photo.description ?? photo.id}
+                width="100%"
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  handleOnClick(photo.id);
+                }}></img>
             </Grid2>
           ))}
     </Grid2>

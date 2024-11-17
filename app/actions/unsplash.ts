@@ -1,4 +1,5 @@
 import { createApi } from 'unsplash-js';
+import { Basic } from 'unsplash-js/dist/methods/photos/types';
 
 const unsplashClient = createApi({
   accessKey: process.env.NEXT_PUBLIC_ACCESS_KEY!,
@@ -23,6 +24,16 @@ export const searchPhotos = async (
           page: page + 1,
           perPage: pageSize
         });
+
+  if (data.type === 'success') {
+    return data.response;
+  }
+};
+
+export const getSpecifiedPhoto = async (photoId: Basic['id']) => {
+  const data = await unsplashClient.photos.get({
+    photoId
+  });
 
   if (data.type === 'success') {
     return data.response;
