@@ -3,16 +3,15 @@
 import { Box, Grid2, TablePagination, Typography } from '@mui/material';
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import { searchPhotos } from '../actions/unsplash';
+import useGlobalStore from '../state';
 
 const Carousel = () => {
-  const [masonryLikeEnabled, setMasonryLikeEnabled] = useState<boolean>(false);
+  const globalState = useGlobalStore();
   const [photos, setPhotos] = useState<Awaited<ReturnType<typeof searchPhotos>>>();
-  const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
 
   useEffect(() => {
     const fetchData = async () => {
-      const apiResult = await searchPhotos(page, pageSize);
+      const apiResult = await searchPhotos(globalState.page, globalState.pageSize);
 
       if (apiResult !== undefined) {
         setPhotos(apiResult);
@@ -20,7 +19,7 @@ const Carousel = () => {
     };
 
     fetchData();
-  }, [page, pageSize]);
+  }, [globalState.page, globalState.pageSize]);
 
   const processData = (data: typeof photos) => {
     if (data === undefined) {
@@ -37,7 +36,7 @@ const Carousel = () => {
   };
 
   const handlePageChange = (event: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-    setPage(newPage + 1);
+    globalState.setPage(newPage + 1);
   };
 
   const handlePageSizeChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -47,7 +46,7 @@ const Carousel = () => {
       value = Number.parseInt(value);
     }
 
-    setPageSize(value);
+    globalState.setPageSize(value);
   };
 
   return (
@@ -63,9 +62,9 @@ const Carousel = () => {
           <TablePagination
             component="div"
             count={photos?.total ?? 10}
-            page={page}
+            page={globalState.page}
             onPageChange={handlePageChange}
-            rowsPerPage={pageSize}
+            rowsPerPage={globalState.pageSize}
             onRowsPerPageChange={handlePageSizeChange}
             labelRowsPerPage="Photos per page:"
             rowsPerPageOptions={[10, 15, 20, 25, 30]}
@@ -73,7 +72,7 @@ const Carousel = () => {
         </Box>
       </Box>
       <Grid2 container flex={1} spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-        {masonryLikeEnabled
+        {globalState.masonryLikeEnabled
           ? processData(photos).map((column, i) => (
               <Grid2
                 key={i}
@@ -103,9 +102,9 @@ const Carousel = () => {
         <TablePagination
           component="div"
           count={photos?.total ?? 10}
-          page={page}
+          page={globalState.page}
           onPageChange={handlePageChange}
-          rowsPerPage={pageSize}
+          rowsPerPage={globalState.pageSize}
           onRowsPerPageChange={handlePageSizeChange}
         />
       </Box>
