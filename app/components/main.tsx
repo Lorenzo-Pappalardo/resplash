@@ -1,6 +1,14 @@
 'use client';
 
-import { Box, FormControlLabel, Switch, TablePagination, Typography } from '@mui/material';
+import {
+  Box,
+  FormControlLabel,
+  Switch,
+  TablePagination,
+  Typography,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import { searchPhotos } from '../actions/unsplash';
 import useGlobalStore from '../state';
@@ -9,6 +17,8 @@ import Carousel from './carousel';
 const MainContent = () => {
   const globalState = useGlobalStore();
   const [photos, setPhotos] = useState<Awaited<ReturnType<typeof searchPhotos>>>();
+  const theme = useTheme();
+  const enableFlexColumn = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,13 +57,18 @@ const MainContent = () => {
         gap={4}
         padding="1rem 0 1rem"
         justifyContent="space-between"
-        alignItems="center">
+        alignItems="center"
+        flexDirection={enableFlexColumn ? 'column' : 'row'}>
         <Typography variant="h6">
           {globalState.searchKeyword.length > 0
             ? `Showing results for: ${globalState.searchKeyword}`
             : 'Showing results from the Editorial feed'}
         </Typography>
-        <Box display="flex" gap={4}>
+        <Box
+          display="flex"
+          flexDirection={enableFlexColumn ? 'column' : 'row'}
+          justifyContent={'center'}
+          gap={4}>
           <FormControlLabel
             control={
               <Switch
