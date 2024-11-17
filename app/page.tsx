@@ -1,11 +1,11 @@
 import Header from './components/header';
-import Carousel from './components/main';
+import MainContent from './components/main';
 
 const Home = async () => {
   return (
     <>
       <Header />
-      <Carousel />
+      <MainContent />
     </>
   );
 };

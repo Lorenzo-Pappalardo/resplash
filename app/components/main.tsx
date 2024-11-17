@@ -1,11 +1,12 @@
 'use client';
 
-import { Box, Grid2, TablePagination, Typography } from '@mui/material';
+import { Box, TablePagination, Typography } from '@mui/material';
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import { searchPhotos } from '../actions/unsplash';
 import useGlobalStore from '../state';
+import Carousel from './carousel';
 
-const Carousel = () => {
+const MainContent = () => {
   const globalState = useGlobalStore();
   const [photos, setPhotos] = useState<Awaited<ReturnType<typeof searchPhotos>>>();
 
@@ -20,20 +21,6 @@ const Carousel = () => {
 
     fetchData();
   }, [globalState.page, globalState.pageSize]);
-
-  const processData = (data: typeof photos) => {
-    if (data === undefined) {
-      return [];
-    }
-
-    const masonryLike: ReadonlyArray<(typeof data)['results']> = [[], [], []];
-
-    for (let i = 0; i < data.results.length; i++) {
-      masonryLike[i % masonryLike.length].push(data.results[i]);
-    }
-
-    return masonryLike;
-  };
 
   const handlePageChange = (event: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     globalState.setPage(newPage + 1);
@@ -71,34 +58,7 @@ const Carousel = () => {
           />
         </Box>
       </Box>
-      <Grid2 container flex={1} spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-        {globalState.masonryLikeEnabled
-          ? processData(photos).map((column, i) => (
-              <Grid2
-                key={i}
-                display="flex"
-                flexDirection="column"
-                gap={4}
-                flex={1}
-                position="relative">
-                {column.map(photo => (
-                  <img
-                    key={photo.id}
-                    src={photo.urls.regular}
-                    alt={photo.description ?? photo.id}
-                    width="100%"></img>
-                ))}
-              </Grid2>
-            ))
-          : photos?.results.map(photo => (
-              <Grid2 key={photo.id} size={{ xs: 4, sm: 4, md: 3 }}>
-                <img
-                  src={photo.urls.regular}
-                  alt={photo.description ?? photo.id}
-                  width="100%"></img>
-              </Grid2>
-            ))}
-      </Grid2>
+      <Carousel photos={photos} />
       <Box display="flex" justifyContent="center">
         <TablePagination
           component="div"
@@ -113,4 +73,4 @@ const Carousel = () => {
   );
 };
 
-export default Carousel;
+export default MainContent;
