@@ -12,7 +12,11 @@ const MainContent = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const apiResult = await searchPhotos(globalState.page, globalState.pageSize);
+      const apiResult = await searchPhotos(
+        globalState.page,
+        globalState.pageSize,
+        globalState.searchKeyword
+      );
 
       if (apiResult !== undefined) {
         setPhotos(apiResult);
@@ -20,7 +24,7 @@ const MainContent = () => {
     };
 
     fetchData();
-  }, [globalState.page, globalState.pageSize]);
+  }, [globalState.page, globalState.pageSize, globalState.searchKeyword]);
 
   const handlePageChange = (event: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     globalState.setPage(newPage + 1);
