@@ -48,7 +48,11 @@ const MainContent = () => {
         padding="1rem 0 1rem"
         justifyContent="space-between"
         alignItems="center">
-        <Typography variant="h6">Showing results from the Editorial feed</Typography>
+        <Typography variant="h6">
+          {globalState.searchKeyword.length > 0
+            ? `Showing results for: ${globalState.searchKeyword}`
+            : 'Showing results from the Editorial feed'}
+        </Typography>
         <Box display="flex" gap={4}>
           <TablePagination
             component="div"
