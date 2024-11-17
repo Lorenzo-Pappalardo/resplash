@@ -8,7 +8,7 @@ const unsplashClient = createApi({
 });
 
 export const searchPhotos = async (
-  page = 1,
+  page = 0,
   pageSize = 10,
   searchKeyword = ''
 ): Promise<undefined | Awaited<ReturnType<typeof unsplashClient.photos.list>>['response']> => {
@@ -16,11 +16,11 @@ export const searchPhotos = async (
     searchKeyword.length > 0
       ? await unsplashClient.search.getPhotos({
           query: searchKeyword,
-          page,
+          page: page + 1,
           perPage: pageSize
         })
       : await unsplashClient.photos.list({
-          page,
+          page: page + 1,
           perPage: pageSize
         });
 

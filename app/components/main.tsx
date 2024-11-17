@@ -27,7 +27,7 @@ const MainContent = () => {
   }, [globalState.page, globalState.pageSize, globalState.searchKeyword]);
 
   const handlePageChange = (event: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-    globalState.setPage(newPage + 1);
+    globalState.setPage(newPage);
   };
 
   const handlePageSizeChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
