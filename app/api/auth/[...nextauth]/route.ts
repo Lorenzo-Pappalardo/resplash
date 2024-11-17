@@ -1,4 +1,4 @@
-import { authorizeEndpoint, makeTokenRequest, tokenEndpoint } from '@/middlewareMINE';
+import { authorizeEndpoint, makeTokenRequest, tokenEndpoint } from '@/my_middleware';
 import NextAuth, { User } from 'next-auth';
 
 const handler = NextAuth({
