@@ -3,9 +3,7 @@ import { Basic } from 'unsplash-js/dist/methods/photos/types';
 
 const unsplashClient = createApi({
   accessKey: process.env.NEXT_PUBLIC_ACCESS_KEY!,
-  headers: {
-    'Accept-Version': 'v1'
-  }
+  apiVersion: 'v1'
 });
 
 export const searchPhotos = async (
