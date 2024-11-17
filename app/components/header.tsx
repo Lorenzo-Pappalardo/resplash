@@ -1,6 +1,6 @@
 'use client';
 
-import { AppBar, Box, Button, TextField, Toolbar, Typography } from '@mui/material';
+import { AppBar, Button, TextField, Toolbar, Typography } from '@mui/material';
 import { ChangeEvent, useRef, useState } from 'react';
 import useGlobalStore from '../state';
 
@@ -24,24 +24,22 @@ const Header = () => {
   };
 
   return (
-    <Box padding={1} sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar sx={{ gap: 4 }}>
-          <Typography variant="h5" component="div" sx={{ display: { xs: 'none', sm: 'block' } }}>
-            Resplash
-          </Typography>
-          <TextField
-            fullWidth
-            label="Search"
-            variant="outlined"
-            placeholder="Search"
-            value={visuallyShownKeyword}
-            onChange={handleOnChange}
-          />
-          <Button variant="contained">Login</Button>
-        </Toolbar>
-      </AppBar>
-    </Box>
+    <AppBar position="sticky">
+      <Toolbar sx={{ gap: 4 }}>
+        <Typography variant="h5" component="div" sx={{ display: { xs: 'none', sm: 'block' } }}>
+          Resplash
+        </Typography>
+        <TextField
+          fullWidth
+          label="Search"
+          variant="outlined"
+          placeholder="Search"
+          value={visuallyShownKeyword}
+          onChange={handleOnChange}
+        />
+        <Button variant="contained">Login</Button>
+      </Toolbar>
+    </AppBar>
   );
 };
 
