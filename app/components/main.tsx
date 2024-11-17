@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, TablePagination, Typography } from '@mui/material';
+import { Box, FormControlLabel, Switch, TablePagination, Typography } from '@mui/material';
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import { searchPhotos } from '../actions/unsplash';
 import useGlobalStore from '../state';
@@ -54,6 +54,17 @@ const MainContent = () => {
             : 'Showing results from the Editorial feed'}
         </Typography>
         <Box display="flex" gap={4}>
+          <FormControlLabel
+            control={
+              <Switch
+                title="Masonry (Experimental)"
+                checked={globalState.masonryLikeEnabled}
+                onChange={globalState.toggleMasonryLikeEnabled}
+              />
+            }
+            label="Masonry (Experimental):"
+            labelPlacement="start"
+          />
           <TablePagination
             component="div"
             count={photos?.total ?? 10}

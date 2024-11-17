@@ -5,12 +5,16 @@ import useGlobalStore from '../state';
 const Carousel = ({ photos }: CarouselProps) => {
   const globalState = useGlobalStore();
 
-  const processData = (data: typeof photos) => {
+  const processData = (data: typeof photos, columnsCount: number = 3) => {
     if (data === undefined) {
       return [];
     }
 
-    const masonryLike: ReadonlyArray<(typeof data)['results']> = [[], [], []];
+    const masonryLike: Array<(typeof data)['results']> = [];
+
+    for (let i = 0; i < columnsCount; i++) {
+      masonryLike.push([]);
+    }
 
     for (let i = 0; i < data.results.length; i++) {
       masonryLike[i % masonryLike.length].push(data.results[i]);
@@ -40,7 +44,7 @@ const Carousel = ({ photos }: CarouselProps) => {
             </Grid2>
           ))
         : photos?.results.map(photo => (
-            <Grid2 key={photo.id} size={{ xs: 4, sm: 4, md: 3 }}>
+            <Grid2 key={photo.id} size={{ xs: 4, sm: 4, md: 4 }}>
               <img src={photo.urls.regular} alt={photo.description ?? photo.id} width="100%"></img>
             </Grid2>
           ))}
