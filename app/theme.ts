@@ -1,23 +1,27 @@
 'use client';
 
+import { colors } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
+  cssVariables: {
+    colorSchemeSelector: 'media'
+  },
   typography: {
-    fontFamily: 'var(--font-roboto)'
+    fontFamily: 'var(--font-geist-sans), var(--font-geist-mono)'
   },
   colorSchemes: {
     light: {
       palette: {
         primary: {
-          main: '#ededed'
+          main: colors.amber['500']
         }
       }
     },
     dark: {
       palette: {
         primary: {
-          main: '#171717'
+          main: colors.amber['500']
         }
       }
     }
