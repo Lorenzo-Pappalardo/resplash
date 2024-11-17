@@ -1,6 +1,7 @@
 'use client';
 
 import { AppBar, Button, TextField, Toolbar, Typography } from '@mui/material';
+import { signIn } from 'next-auth/react';
 import { ChangeEvent, useRef, useState } from 'react';
 import useGlobalStore from '../state';
 
@@ -23,8 +24,12 @@ const Header = () => {
     }, debounceTimeout);
   };
 
+  const handleLogin = () => {
+    signIn();
+  };
+
   return (
-    <AppBar position="sticky">
+    <AppBar position="sticky" style={{ padding: '8px' }}>
       <Toolbar sx={{ gap: 4 }}>
         <Typography variant="h5" component="div" sx={{ display: { xs: 'none', sm: 'block' } }}>
           Resplash
@@ -37,7 +42,9 @@ const Header = () => {
           value={visuallyShownKeyword}
           onChange={handleOnChange}
         />
-        <Button variant="contained">Login</Button>
+        <Button variant="contained" onClick={handleLogin}>
+          Login
+        </Button>
       </Toolbar>
     </AppBar>
   );
