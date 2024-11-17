@@ -28,7 +28,7 @@ const Carousel = ({ photos }: CarouselProps) => {
   };
 
   const handleOnClick = (photoID: string) => {
-    router.push(`/${photoID}`);
+    router.push(`/photo/${photoID}`);
   };
 
   return (

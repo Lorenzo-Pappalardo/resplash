@@ -1,7 +1,7 @@
 import { Favorite } from '@mui/icons-material';
 import { Box, Fab } from '@mui/material';
 import { Suspense } from 'react';
-import { getSpecifiedPhoto } from '../actions/unsplash';
+import { getSpecifiedPhoto } from '../../actions/unsplash';
 import GoBackButton from './goBackButton';
 import LoadingPhotoSkeleton from './loading';
 
