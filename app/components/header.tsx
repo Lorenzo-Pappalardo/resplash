@@ -1,11 +1,12 @@
 'use client';
 
 import { AppBar, Button, TextField, Toolbar, Typography } from '@mui/material';
-import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { ChangeEvent, useRef, useState } from 'react';
 import useGlobalStore from '../state';
 
 const Header = () => {
+  const router = useRouter();
   const searchKeyword = useGlobalStore(state => state.searchKeyword);
   const setSearchKeyword = useGlobalStore(state => state.setSearchKeyword);
   const [visuallyShownKeyword, setVisuallyShownKeyword] = useState<string>(searchKeyword);
@@ -25,7 +26,7 @@ const Header = () => {
   };
 
   const handleLogin = () => {
-    signIn();
+    router.push('/authentication');
   };
 
   return (

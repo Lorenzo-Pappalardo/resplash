@@ -15,40 +15,32 @@ export async function middleware(request: NextRequest) {
 
   console.log('[Middleware]', 'Request URL:', request.url);
 
-  const response = NextResponse.next();
-
   const authorizationCode = urlSearchParams.get('code');
 
   if (authorizationCode !== null) {
     console.log('[Middleware]', 'Found authorization code:', authorizationCode);
 
-    const tokens = await makeTokenRequest(authorizationCode);
-
-    console.log(tokens);
-
-    if (tokens?.access_token !== undefined) {
-      response.cookies.set(jwtCookieKey, tokens?.access_token);
-    }
-  } else if (request.cookies.get(jwtCookieKey) === undefined) {
-    const queryParameters = new URLSearchParams();
-    queryParameters.append('client_id', process.env.ACCESS_KEY ?? '');
-    queryParameters.append('redirect_uri', process.env.REDIRECT_URI ?? '');
-    queryParameters.append('response_type', 'code');
-    queryParameters.append('scope', ['public'].join('+'));
-
-    return NextResponse.redirect(`${authorizeEndpoint}?${queryParameters}`);
+    return await makeTokenRequest(request, authorizationCode);
   }
 
-  return response;
+  if (request.cookies.get(jwtCookieKey) === undefined) {
+    return makeAuthorisationRequest();
+  }
+
+  return NextResponse.next();
 }
 
-export const makeTokenRequest = async (
-  authorizationCode?: string
-): Promise<undefined | TokenSetParameters> => {
-  if (authorizationCode === undefined) {
-    return undefined;
-  }
+const makeAuthorisationRequest = () => {
+  const queryParameters = new URLSearchParams();
+  queryParameters.append('client_id', process.env.ACCESS_KEY ?? '');
+  queryParameters.append('redirect_uri', process.env.REDIRECT_URI ?? '');
+  queryParameters.append('response_type', 'code');
+  queryParameters.append('scope', ['public'].join('+'));
 
+  return NextResponse.redirect(`${authorizeEndpoint}?${queryParameters}`);
+};
+
+export const makeTokenRequest = async (request: NextRequest, authorizationCode: string) => {
   const queryParameters = new URLSearchParams();
   queryParameters.append('client_id', process.env.ACCESS_KEY ?? '');
   queryParameters.append('client_secret', process.env.SECRET_KEY ?? '');
@@ -61,8 +53,22 @@ export const makeTokenRequest = async (
   });
 
   if (tokenResponse.ok) {
-    return await tokenResponse.json();
+    const tokens: TokenSetParameters = await tokenResponse.json();
+
+    if (tokens?.access_token !== undefined) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/';
+      const response = NextResponse.redirect(url);
+      response.cookies.set(jwtCookieKey, tokens?.access_token, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 1296000
+      });
+      return response;
+    }
   }
+
+  return NextResponse.next();
 };
 
 interface TokenSetParameters {
