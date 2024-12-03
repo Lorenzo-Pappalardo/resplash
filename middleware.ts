@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const jwtCookieKey = 'UNSPLASH_JWT';
+const authTokenKey = 'UNSPLASH_JWT';
 const oAuth2Location = 'https://unsplash.com/oauth';
 const authorizeEndpoint = `${oAuth2Location}/authorize`;
 const tokenEndpoint = `${oAuth2Location}/token`;
@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
     return await makeTokenRequest(request, authorizationCode);
   }
 
-  if (request.cookies.get(jwtCookieKey) === undefined) {
+  if (request.cookies.get(authTokenKey) === undefined) {
     return makeAuthorisationRequest();
   }
 
@@ -35,7 +35,7 @@ const makeAuthorisationRequest = () => {
   queryParameters.append('client_id', process.env.ACCESS_KEY ?? '');
   queryParameters.append('redirect_uri', process.env.REDIRECT_URI ?? '');
   queryParameters.append('response_type', 'code');
-  queryParameters.append('scope', ['public'].join('+'));
+  queryParameters.append('scope', 'public write_likes');
 
   return NextResponse.redirect(`${authorizeEndpoint}?${queryParameters}`);
 };
@@ -59,7 +59,7 @@ const makeTokenRequest = async (request: NextRequest, authorizationCode: string)
       const url = request.nextUrl.clone();
       url.pathname = '/';
       const response = NextResponse.redirect(url);
-      response.cookies.set(jwtCookieKey, tokens?.access_token, {
+      response.cookies.set(authTokenKey, tokens?.access_token, {
         httpOnly: true,
         secure: true,
         maxAge: 1296000
