@@ -1,8 +1,8 @@
-import { Favorite } from '@mui/icons-material';
-import { Box, Fab } from '@mui/material';
+import { Box } from '@mui/material';
 import { Suspense } from 'react';
 import { getSpecifiedPhoto } from '../../actions/unsplash';
 import GoBackButton from './goBackButton';
+import LikeButton from './likeButton';
 import LoadingPhotoSkeleton from './loading';
 
 export const dynamicParams = true;
@@ -30,9 +30,7 @@ const PhotoDetailPage = async ({ params }: PhotoDetailPageProps) => {
         </Suspense>
       </Box>
       <Box position="absolute" bottom={16} right={16}>
-        <Fab aria-label="like">
-          <Favorite />
-        </Fab>
+        {photo !== undefined && <LikeButton id={photo.id} />}
       </Box>
     </Box>
   );
