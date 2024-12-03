@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const jwtCookieKey = 'UNSPLASH_JWT';
 const oAuth2Location = 'https://unsplash.com/oauth';
-export const authorizeEndpoint = `${oAuth2Location}/authorize`;
-export const tokenEndpoint = `${oAuth2Location}/token`;
+const authorizeEndpoint = `${oAuth2Location}/authorize`;
+const tokenEndpoint = `${oAuth2Location}/token`;
 
 export const config = {
   matcher: '/authentication'
@@ -40,7 +40,7 @@ const makeAuthorisationRequest = () => {
   return NextResponse.redirect(`${authorizeEndpoint}?${queryParameters}`);
 };
 
-export const makeTokenRequest = async (request: NextRequest, authorizationCode: string) => {
+const makeTokenRequest = async (request: NextRequest, authorizationCode: string) => {
   const queryParameters = new URLSearchParams();
   queryParameters.append('client_id', process.env.ACCESS_KEY ?? '');
   queryParameters.append('client_secret', process.env.SECRET_KEY ?? '');
