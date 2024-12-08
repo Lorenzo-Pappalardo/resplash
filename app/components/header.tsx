@@ -2,7 +2,8 @@
 
 import { AppBar, Button, TextField, Toolbar, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { getProfile } from '../actions/unsplash';
 import useGlobalStore from '../state';
 
 const Header = () => {
@@ -12,6 +13,20 @@ const Header = () => {
   const [visuallyShownKeyword, setVisuallyShownKeyword] = useState<string>(searchKeyword);
   const debounceTimeoutID = useRef<ReturnType<typeof setTimeout>>();
   const debounceTimeout = 500;
+
+  const [userFirstName, setUserFirstName] = useState<string>();
+
+  useEffect(() => {
+    const getProfileInformation = async () => {
+      const profile = await getProfile();
+
+      if (profile !== undefined) {
+        setUserFirstName(profile.first_name);
+      }
+    };
+
+    getProfileInformation();
+  }, []);
 
   const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     setVisuallyShownKeyword(event.target.value);
@@ -43,9 +58,13 @@ const Header = () => {
           value={visuallyShownKeyword}
           onChange={handleOnChange}
         />
-        <Button variant="contained" onClick={handleLogin}>
-          Login
-        </Button>
+        {userFirstName === undefined ? (
+          <Button variant="contained" onClick={handleLogin}>
+            Login
+          </Button>
+        ) : (
+          <Button variant="text">{userFirstName}</Button>
+        )}
       </Toolbar>
     </AppBar>
   );

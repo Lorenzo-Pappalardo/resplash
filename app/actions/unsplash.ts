@@ -6,7 +6,10 @@ import { Basic } from 'unsplash-js/dist/methods/photos/types';
 
 const authTokenKey = 'UNSPLASH_JWT';
 const unsplashAPILocation = 'https://api.unsplash.com';
-const defaultHeaders = {
+const headers: {
+  'Accept-Version': 'v1';
+  Authorization?: string;
+} = {
   'Accept-Version': 'v1'
 };
 
@@ -14,16 +17,23 @@ class UnsplashClient {
   static #instance?: UnsplashClient;
 
   #authenticated: boolean = false;
-  #authToken?: string;
-  #client: ReturnType<typeof createApi> & {
-    likePhoto: (id: string) => Promise<boolean>;
-    unlikePhoto: (id: string) => Promise<boolean>;
-  } = Object.assign(
+  #client = Object.assign<
+    ReturnType<typeof createApi>,
+    {
+      getProfile: () => Promise<undefined | { first_name: string }>;
+      likePhoto: (id: string) => Promise<boolean>;
+      unlikePhoto: (id: string) => Promise<boolean>;
+    }
+  >(
     createApi({
       accessKey: process.env.NEXT_PUBLIC_ACCESS_KEY!,
       apiVersion: 'v1'
     }),
-    { likePhoto: () => Promise.resolve(false), unlikePhoto: () => Promise.resolve(false) }
+    {
+      getProfile: () => Promise.resolve(undefined),
+      likePhoto: () => Promise.resolve(false),
+      unlikePhoto: () => Promise.resolve(false)
+    }
   );
 
   private constructor() {}
@@ -42,12 +52,10 @@ class UnsplashClient {
 
       if (authToken !== undefined) {
         this.#authenticated = true;
-        this.#authToken = authToken;
+        headers.Authorization = `Bearer ${authToken}`;
         this.setClient(
           createApi({
-            headers: {
-              Authorization: `Bearer ${authToken}`
-            },
+            headers: headers,
             accessKey: process.env.NEXT_PUBLIC_ACCESS_KEY!,
             apiVersion: 'v1'
           })
@@ -62,18 +70,22 @@ class UnsplashClient {
 
   private setClient(newClient: ReturnType<typeof createApi>) {
     this.#client = Object.assign(newClient, {
+      getProfile: this.getProfile,
       likePhoto: this.likePhoto,
       unlikePhoto: this.unlikePhoto
     });
   }
 
-  private likePhoto = async (id: string) => {
+  private async getProfile() {
+    const res = await fetch(`${unsplashAPILocation}/me`, { headers });
+    const data = await res.json();
+    return data;
+  }
+
+  private async likePhoto(id: string) {
     const res = await fetch(`${unsplashAPILocation}/photos/${id}/like`, {
       method: 'POST',
-      headers: {
-        ...defaultHeaders,
-        Authorization: `Bearer ${this.#authToken}`
-      }
+      headers
     });
 
     const data = await res.json();
@@ -83,15 +95,12 @@ class UnsplashClient {
     }
 
     return res.status === 201;
-  };
+  }
 
-  private unlikePhoto = async (id: string) => {
+  private async unlikePhoto(id: string) {
     const res = await fetch(`${unsplashAPILocation}/photos/${id}/like`, {
       method: 'DELETE',
-      headers: {
-        ...defaultHeaders,
-        Authorization: `Bearer ${this.#authToken}`
-      }
+      headers
     });
 
     const data = await res.json();
@@ -101,8 +110,10 @@ class UnsplashClient {
     }
 
     return res.status === 200;
-  };
+  }
 }
+
+export const getProfile = async () => (await UnsplashClient.instance.getClient()).getProfile();
 
 export const searchPhotos = async (page = 0, pageSize = 10, searchKeyword = '') => {
   const unsplashClient = await UnsplashClient.instance.getClient();
