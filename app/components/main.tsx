@@ -1,24 +1,17 @@
 'use client';
 
-import {
-  Box,
-  FormControlLabel,
-  Switch,
-  TablePagination,
-  Typography,
-  useMediaQuery,
-  useTheme
-} from '@mui/material';
+import { Box, FormControlLabel, Switch, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import { searchPhotos } from '../actions/unsplash';
 import useGlobalStore from '../state';
 import Carousel from './carousel';
+import MobileFriendlyTablePagination from './mobileFriendlyTablePagination';
 
 const MainContent = () => {
   const globalState = useGlobalStore();
   const [photos, setPhotos] = useState<Awaited<ReturnType<typeof searchPhotos>>>();
   const theme = useTheme();
-  const enableFlexColumn = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,17 +50,18 @@ const MainContent = () => {
         gap={4}
         padding="1rem 0 1rem"
         justifyContent="space-between"
-        alignItems="center"
-        flexDirection={enableFlexColumn ? 'column' : 'row'}>
-        <Typography variant="h6">
+        alignItems={isMobile ? 'start' : 'center'}
+        flexDirection={isMobile ? 'column' : 'row'}>
+        <Typography variant="h6" marginLeft={2}>
           {globalState.searchKeyword.length > 0
             ? `Showing results for: ${globalState.searchKeyword}`
             : 'Showing results from the Editorial feed'}
         </Typography>
         <Box
           display="flex"
-          flexDirection={enableFlexColumn ? 'column' : 'row'}
+          flexDirection={isMobile ? 'column' : 'row'}
           justifyContent={'center'}
+          width={isMobile ? '100%' : 'unset'}
           gap={4}>
           <FormControlLabel
             control={
@@ -79,23 +73,22 @@ const MainContent = () => {
             }
             label="Masonry (Experimental):"
             labelPlacement="start"
+            sx={{
+              justifyContent: 'start'
+            }}
           />
-          <TablePagination
-            component="div"
+          <MobileFriendlyTablePagination
             count={photos?.total ?? 10}
             page={globalState.page}
             onPageChange={handlePageChange}
             rowsPerPage={globalState.pageSize}
             onRowsPerPageChange={handlePageSizeChange}
-            labelRowsPerPage="Photos per page:"
-            rowsPerPageOptions={[10, 15, 20, 25, 30]}
           />
         </Box>
       </Box>
       <Carousel photos={photos} />
       <Box display="flex" justifyContent="center">
-        <TablePagination
-          component="div"
+        <MobileFriendlyTablePagination
           count={photos?.total ?? 10}
           page={globalState.page}
           onPageChange={handlePageChange}
