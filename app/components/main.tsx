@@ -26,7 +26,23 @@ const MainContent = () => {
       }
     };
 
-    fetchData();
+    const placeholders: Array<any> = new Array(20).fill(0).reduce((acc, _, i) => {
+      acc.push({
+        id: (Math.random() * 1000).toString(8) + i,
+        urls: {
+          regular: 'https://placehold.co/600x400'
+        }
+      });
+
+      return acc;
+    }, []);
+
+    setPhotos({
+      results: placeholders,
+      total: placeholders.length
+    });
+
+    // fetchData();
   }, [globalState.page, globalState.pageSize, globalState.searchKeyword]);
 
   const handlePageChange = (event: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -63,20 +79,22 @@ const MainContent = () => {
           justifyContent={'center'}
           width={isMobile ? '100%' : 'unset'}
           gap={4}>
-          <FormControlLabel
-            control={
-              <Switch
-                title="Masonry (Experimental)"
-                checked={globalState.masonryLikeEnabled}
-                onChange={globalState.toggleMasonryLikeEnabled}
-              />
-            }
-            label="Masonry (Experimental):"
-            labelPlacement="start"
-            sx={{
-              justifyContent: 'start'
-            }}
-          />
+          {!isMobile && (
+            <FormControlLabel
+              control={
+                <Switch
+                  title="Masonry (Experimental)"
+                  checked={globalState.masonryLikeEnabled}
+                  onChange={globalState.toggleMasonryLikeEnabled}
+                />
+              }
+              label="Masonry (Experimental):"
+              labelPlacement="start"
+              sx={{
+                justifyContent: 'start'
+              }}
+            />
+          )}
           <MobileFriendlyTablePagination
             count={photos?.total ?? 10}
             page={globalState.page}
