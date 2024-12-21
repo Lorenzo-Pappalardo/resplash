@@ -19,7 +19,7 @@ const LikeButton = ({ id }: { id?: string }) => {
   };
 
   return (
-    <Fab aria-label="like" onClick={handleClick}>
+    <Fab aria-label="like" color="primary" size="medium" onClick={handleClick}>
       <Favorite htmlColor={liked ? 'red' : undefined} />
     </Fab>
   );
