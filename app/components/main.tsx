@@ -26,7 +26,7 @@ const MainContent = () => {
       }
     };
 
-    const placeholders: Array<any> = new Array(20).fill(0).reduce((acc, _, i) => {
+    /* const placeholders: Array<any> = new Array(20).fill(0).reduce((acc, _, i) => {
       acc.push({
         id: (Math.random() * 1000).toString(8) + i,
         urls: {
@@ -40,9 +40,9 @@ const MainContent = () => {
     setPhotos({
       results: placeholders,
       total: placeholders.length
-    });
+    }); */
 
-    // fetchData();
+    fetchData();
   }, [globalState.page, globalState.pageSize, globalState.searchKeyword]);
 
   const handlePageChange = (event: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
