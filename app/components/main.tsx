@@ -1,6 +1,15 @@
 'use client';
 
-import { Box, FormControlLabel, Switch, Typography, useMediaQuery, useTheme } from '@mui/material';
+import {
+  Alert,
+  Box,
+  FormControlLabel,
+  Snackbar,
+  Switch,
+  Typography,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import { searchPhotos } from '../actions/unsplash';
 import useGlobalStore from '../state';
@@ -10,6 +19,7 @@ import MobileFriendlyTablePagination from './mobileFriendlyTablePagination';
 const MainContent = () => {
   const globalState = useGlobalStore();
   const [photos, setPhotos] = useState<Awaited<ReturnType<typeof searchPhotos>>>();
+  const [error, setError] = useState('');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -23,6 +33,8 @@ const MainContent = () => {
 
       if (apiResult !== undefined) {
         setPhotos(apiResult);
+      } else {
+        setError('Error fetching data');
       }
     };
 
@@ -45,6 +57,10 @@ const MainContent = () => {
     fetchData();
   }, [globalState.page, globalState.pageSize, globalState.searchKeyword]);
 
+  const onSnackbarClose = () => {
+    setError('');
+  };
+
   const handlePageChange = (event: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     globalState.setPage(newPage);
   };
@@ -60,7 +76,7 @@ const MainContent = () => {
   };
 
   return (
-    <Box padding="0 2rem">
+    <Box display="flex" flexDirection="column" flex={1} padding="0 2rem">
       <Box
         display="flex"
         gap={4}
@@ -114,6 +130,15 @@ const MainContent = () => {
           onRowsPerPageChange={handlePageSizeChange}
         />
       </Box>
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        autoHideDuration={5000}
+        open={error.length > 0}
+        onClose={onSnackbarClose}>
+        <Alert onClose={onSnackbarClose} severity="error" variant="filled">
+          {error}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
