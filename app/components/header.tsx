@@ -7,9 +7,8 @@ import { getProfile } from '../actions/unsplash';
 import useGlobalStore from '../state';
 
 const Header = () => {
+  const { searchKeyword, setAuthenticated, setSearchKeyword } = useGlobalStore();
   const router = useRouter();
-  const searchKeyword = useGlobalStore(state => state.searchKeyword);
-  const setSearchKeyword = useGlobalStore(state => state.setSearchKeyword);
   const [visuallyShownKeyword, setVisuallyShownKeyword] = useState<string>(searchKeyword);
   const debounceTimeoutID = useRef<ReturnType<typeof setTimeout>>();
   const debounceTimeout = 500;
@@ -22,6 +21,7 @@ const Header = () => {
 
       if (profile !== undefined) {
         setUserFirstName(profile.first_name);
+        setAuthenticated(true);
       }
     };
 

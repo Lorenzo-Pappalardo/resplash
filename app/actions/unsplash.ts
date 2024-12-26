@@ -26,7 +26,7 @@ class UnsplashClient {
     }
   >(
     createApi({
-      accessKey: process.env.NEXT_PUBLIC_ACCESS_KEY!,
+      accessKey: process.env.ACCESS_KEY!,
       apiVersion: 'v1'
     }),
     {
@@ -56,7 +56,7 @@ class UnsplashClient {
         this.setClient(
           createApi({
             headers: headers,
-            accessKey: process.env.NEXT_PUBLIC_ACCESS_KEY!,
+            accessKey: process.env.ACCESS_KEY!,
             apiVersion: 'v1'
           })
         );
