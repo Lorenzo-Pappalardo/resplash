@@ -1,0 +1,57 @@
+name: Build and Deploy to Azure
+
+# Trigger della pipeline
+on:
+  push:
+    branches:
+      - main  # Esegui la pipeline quando viene aggiornato il branch "main"
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout del codice
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Login ad Azure Container Registry (ACR)
+    - name: Login to Azure Container Registry
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # Build e Push dell'immagine Docker su ACR
+    - name: Build and push Docker image
+      env:
+        AZURE_REGISTRY: ${{ secrets.AZURE_REGISTRY }}
+      run: |
+        az acr login --name ${{ secrets.AZURE_REGISTRY }}
+        docker build -t ${{ secrets.AZURE_REGISTRY }}/myapp:latest .
+        docker push ${{ secrets.AZURE_REGISTRY }}/myapp:latest
+
+  deploy:
+    name: Deploy to Azure Container Instances
+    needs: build-and-push  # Esegui il deploy solo dopo il completamento del build
+    runs-on: ubuntu-latest
+
+    steps:
+    # Login ad Azure per il deploy
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # Aggiorna il container su Azure Container Instances
+    - name: Deploy to Azure Container Instances
+      env:
+        AZURE_REGISTRY: ${{ secrets.AZURE_REGISTRY }}
+      run: |
+        az container create \
+          --resource-group <resource-group-name> \
+          --name my-container \
+          --image ${{ secrets.AZURE_REGISTRY }}/myapp:latest \
+          --restart-policy Always \
+          --cpu 1 \
+          --memory 1.5
