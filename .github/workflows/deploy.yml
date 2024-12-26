@@ -63,5 +63,5 @@ jobs:
             --cpu 1 \
             --memory 1.5 \
             --os-type Linux \
-            --registry-username ${{ secrets.AZURE_REGISTRY_USERNAME }}
+            --registry-username ${{ secrets.AZURE_REGISTRY_USERNAME }} \
             --registry-password ${{ secrets.AZURE_REGISTRY_PASSWORD }}
