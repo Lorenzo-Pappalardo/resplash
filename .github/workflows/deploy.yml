@@ -31,7 +31,7 @@ jobs:
           echo "Elenco dei file nella directory di lavoro:"
           ls -la
           echo "Tentativo di build dell'immagine Docker..."
-          docker buildx build --platform linux/amd64 --tag ${{ secrets.AZURE_REGISTRY }}/resplash:latest --push --registry-login-server ${{ secrets.AZURE_REGISTRY }}.azurecr.io .
+          docker buildx build --platform linux/amd64 --tag ${{ secrets.AZURE_REGISTRY }}.azurecr.io/resplash:latest --push .
 
   deploy:
     name: Deploy to Azure Container Instances
