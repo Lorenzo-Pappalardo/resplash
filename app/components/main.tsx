@@ -17,7 +17,15 @@ import Carousel from './carousel';
 import MobileFriendlyTablePagination from './mobileFriendlyTablePagination';
 
 const MainContent = () => {
-  const globalState = useGlobalStore();
+  const {
+    page,
+    pageSize,
+    searchKeyword,
+    masonryLikeEnabled,
+    setPage,
+    setPageSize,
+    toggleMasonryLikeEnabled
+  } = useGlobalStore();
   const [photos, setPhotos] = useState<Awaited<ReturnType<typeof searchPhotos>>>();
   const [error, setError] = useState('');
   const theme = useTheme();
@@ -25,11 +33,7 @@ const MainContent = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const apiResult = await searchPhotos(
-        globalState.page,
-        globalState.pageSize,
-        globalState.searchKeyword
-      );
+      const apiResult = await searchPhotos(page, pageSize, searchKeyword);
 
       if (apiResult !== undefined) {
         setPhotos(apiResult);
@@ -38,7 +42,7 @@ const MainContent = () => {
       }
     };
 
-    /* const placeholders: Array<any> = new Array(20).fill(0).reduce((acc, _, i) => {
+    const placeholders: Array<any> = new Array(20).fill(0).reduce((acc, _, i) => {
       acc.push({
         id: (Math.random() * 1000).toString(8) + i,
         urls: {
@@ -52,17 +56,17 @@ const MainContent = () => {
     setPhotos({
       results: placeholders,
       total: placeholders.length
-    }); */
+    });
 
     fetchData();
-  }, [globalState.page, globalState.pageSize, globalState.searchKeyword]);
+  }, [page, pageSize, searchKeyword]);
 
   const onSnackbarClose = () => {
     setError('');
   };
 
   const handlePageChange = (event: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-    globalState.setPage(newPage);
+    setPage(newPage);
   };
 
   const handlePageSizeChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -72,7 +76,7 @@ const MainContent = () => {
       value = Number.parseInt(value);
     }
 
-    globalState.setPageSize(value);
+    setPageSize(value);
   };
 
   return (
@@ -85,8 +89,8 @@ const MainContent = () => {
         alignItems={isMobile ? 'start' : 'center'}
         flexDirection={isMobile ? 'column' : 'row'}>
         <Typography variant="h6" marginLeft={2}>
-          {globalState.searchKeyword.length > 0
-            ? `Showing results for: ${globalState.searchKeyword}`
+          {searchKeyword.length > 0
+            ? `Showing results for: ${searchKeyword}`
             : 'Showing results from the Editorial feed'}
         </Typography>
         <Box
@@ -100,8 +104,8 @@ const MainContent = () => {
               control={
                 <Switch
                   title="Masonry (Experimental)"
-                  checked={globalState.masonryLikeEnabled}
-                  onChange={globalState.toggleMasonryLikeEnabled}
+                  checked={masonryLikeEnabled}
+                  onChange={toggleMasonryLikeEnabled}
                 />
               }
               label="Masonry (Experimental):"
@@ -113,9 +117,9 @@ const MainContent = () => {
           )}
           <MobileFriendlyTablePagination
             count={photos?.total ?? 10}
-            page={globalState.page}
+            page={page}
             onPageChange={handlePageChange}
-            rowsPerPage={globalState.pageSize}
+            rowsPerPage={pageSize}
             onRowsPerPageChange={handlePageSizeChange}
           />
         </Box>
@@ -124,9 +128,9 @@ const MainContent = () => {
       <Box display="flex" justifyContent="center">
         <MobileFriendlyTablePagination
           count={photos?.total ?? 10}
-          page={globalState.page}
+          page={page}
           onPageChange={handlePageChange}
-          rowsPerPage={globalState.pageSize}
+          rowsPerPage={pageSize}
           onRowsPerPageChange={handlePageSizeChange}
         />
       </Box>
