@@ -62,4 +62,6 @@ jobs:
             --restart-policy Always \
             --cpu 1 \
             --memory 1.5 \
-            --os-type Linux
+            --os-type Linux \
+            --registry-username ${{ secrets.AZURE_REGISTRY_USERNAME }}
+            --registry-password ${{ secrets.AZURE_REGISTRY_PASSWORD }}
