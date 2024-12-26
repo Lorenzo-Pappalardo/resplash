@@ -23,19 +23,19 @@ jobs:
 
       # Autentica Docker con ACR usando USERNAME e PASSWORD
       - name: Docker login to ACR
-        run: docker login ${{ secrets.AZURE_REGISTRY }}.azurecr.io -u ${{ secrets.AZURE_REGISTRY_USERNAME }} -p ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+        run: docker login resplashac.azurecr.io -u ${{ secrets.AZURE_REGISTRY_USERNAME }} -p ${{ secrets.AZURE_REGISTRY_PASSWORD }}
 
       # Build e Push dell'immagine Docker su ACR
       - name: Build and push Docker image
         env:
-          AZURE_REGISTRY: ${{ secrets.AZURE_REGISTRY }}
+          AZURE_REGISTRY: resplashac
         run: |
           echo "Directory di lavoro corrente:"
           pwd
           echo "Elenco dei file nella directory di lavoro:"
           ls -la
           echo "Tentativo di build dell'immagine Docker..."
-          docker buildx build --platform linux/amd64 --tag ${{ secrets.AZURE_REGISTRY }}.azurecr.io/resplash:latest --push .
+          docker buildx build --platform linux/amd64 --tag resplashac.azurecr.io/resplash:latest --push .
 
   deploy:
     name: Deploy to Azure Container Instances
@@ -54,9 +54,11 @@ jobs:
         run: |
           az container create \
             --resource-group SistemiCloud \
-            --name my-container \
-            --image ${{ secrets.AZURE_REGISTRY }}/resplash:latest \
+            --name resplash-aci-container \
+            --image resplashac.azurecr.io/resplash:latest \
             --restart-policy Always \
             --cpu 1 \
             --memory 1.5 \
-            --os-type Linux
+            --os-type Linux \
+            --acr-username ${{ secrets.AZURE_REGISTRY_USERNAME }} \
+            --acr-password ${{ secrets.AZURE_REGISTRY_PASSWORD }}
