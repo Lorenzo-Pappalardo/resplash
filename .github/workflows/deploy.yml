@@ -28,7 +28,7 @@ jobs:
       # Build e Push dell'immagine Docker su ACR
       - name: Build and push Docker image
         env:
-          AZURE_REGISTRY: resplashacr # Nome ACR corretto
+          AZURE_REGISTRY: resplashacr
         run: |
           echo "Directory di lavoro corrente:"
           pwd
@@ -48,6 +48,9 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+          allow-no-subscriptions: true
+          azcliversion: 'latest' # Forza l'utilizzo della versione più recente
 
       # Aggiorna il container su Azure Container Instances
       - name: Deploy to Azure Container Instances
