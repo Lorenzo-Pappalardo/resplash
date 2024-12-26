@@ -15,7 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Login ad Azure Container Registry (ACR) - Opzionale, ma può essere utile per altri task Azure
+      # Login ad Azure Container Registry (ACR)
       - name: Login to Azure Container Registry
         uses: azure/login@v1
         with:
@@ -58,4 +58,5 @@ jobs:
             --image ${{ secrets.AZURE_REGISTRY }}/resplash:latest \
             --restart-policy Always \
             --cpu 1 \
-            --memory 1.5
+            --memory 1.5 \
+            --os-type Linux
