@@ -15,11 +15,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Login ad Azure Container Registry (ACR)
+      # Login ad Azure Container Registry (ACR) - Opzionale, ma può essere utile per altri task Azure
       - name: Login to Azure Container Registry
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Autentica Docker con ACR usando USERNAME e PASSWORD
+      - name: Docker login to ACR
+        run: docker login ${{ secrets.AZURE_REGISTRY }}.azurecr.io -u ${{ secrets.AZURE_REGISTRY_USERNAME }} -p ${{ secrets.AZURE_REGISTRY_PASSWORD }}
 
       # Build e Push dell'immagine Docker su ACR
       - name: Build and push Docker image
