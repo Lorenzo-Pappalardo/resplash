@@ -26,6 +26,11 @@ jobs:
         env:
           AZURE_REGISTRY: ${{ secrets.AZURE_REGISTRY }}
         run: |
+          echo "Directory di lavoro corrente:"
+          pwd
+          echo "Elenco dei file nella directory di lavoro:"
+          ls -la
+          echo "Tentativo di build dell'immagine Docker..."
           docker buildx build --platform linux/amd64 --tag ${{ secrets.AZURE_REGISTRY }}/resplash:latest --push --registry-login-server ${{ secrets.AZURE_REGISTRY }}.azurecr.io .
 
   deploy:
