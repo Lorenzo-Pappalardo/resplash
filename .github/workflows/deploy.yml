@@ -1,6 +1,5 @@
 name: Build and Deploy to Azure
 
-# Trigger della pipeline
 on:
   push:
     branches:
@@ -28,8 +27,8 @@ jobs:
         AZURE_REGISTRY: ${{ secrets.AZURE_REGISTRY }}
       run: |
         az acr login --name ${{ secrets.AZURE_REGISTRY }}
-        docker build -t ${{ secrets.AZURE_REGISTRY }}/myapp:latest .
-        docker push ${{ secrets.AZURE_REGISTRY }}/myapp:latest
+        docker build -t ${{ secrets.AZURE_REGISTRY }}/resplash:latest .
+        docker push ${{ secrets.AZURE_REGISTRY }}/resplash:latest
 
   deploy:
     name: Deploy to Azure Container Instances
@@ -49,9 +48,9 @@ jobs:
         AZURE_REGISTRY: ${{ secrets.AZURE_REGISTRY }}
       run: |
         az container create \
-          --resource-group <resource-group-name> \
+          --resource-group SistemiCloud \
           --name my-container \
-          --image ${{ secrets.AZURE_REGISTRY }}/myapp:latest \
+          --image ${{ secrets.AZURE_REGISTRY }}/resplash:latest \
           --restart-policy Always \
           --cpu 1 \
           --memory 1.5
