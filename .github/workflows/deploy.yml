@@ -25,12 +25,10 @@ jobs:
     - name: Build and push Docker image
       env:
         AZURE_REGISTRY: ${{ secrets.AZURE_REGISTRY }}
-        AZURE_REGISTRY_USERNAME: ${{ secrets.AZURE_REGISTRY_USERNAME }}
-        AZURE_REGISTRY_PASSWORD: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
       run: |
-        echo $AZURE_REGISTRY_PASSWORD | docker login $AZURE_REGISTRY -u $AZURE_REGISTRY_USERNAME --password-stdin
-        docker build -t $AZURE_REGISTRY/resplash:latest .
-        docker push $AZURE_REGISTRY/resplash:latest
+        az acr login --name ${{ secrets.AZURE_REGISTRY }}
+        docker build -t ${{ secrets.AZURE_REGISTRY }}/resplash:latest .
+        docker push ${{ secrets.AZURE_REGISTRY }}/resplash:latest
 
   deploy:
     name: Deploy to Azure Container Instances
@@ -46,5 +44,11 @@ jobs:
 
     # Aggiorna il container su Azure Container Instances
     - name: Deploy to Azure Container Instances
-      env:
-        AZUR
+      run: |
+        az container create \
+          --resource-group SistemiCloud \
+          --name my-container \
+          --image ${{ secrets.AZURE_REGISTRY }}/resplash:latest \
+          --restart-policy Always \
+          --cpu 1 \
+          --memory 1.5
