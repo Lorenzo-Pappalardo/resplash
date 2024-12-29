@@ -1,7 +1,9 @@
 'use client';
 
 import styled from '@emotion/styled';
-import { Box, Checkbox, Grid2 } from '@mui/material';
+import CancelIcon from '@mui/icons-material/Cancel';
+import DownloadIcon from '@mui/icons-material/Download';
+import { Box, Checkbox, Fab, Grid2 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useReducer } from 'react';
 import { Basic } from 'unsplash-js/dist/methods/photos/types';
@@ -14,16 +16,23 @@ const Carousel = ({ photos }: CarouselProps) => {
   const [selectedPhotos, updateSelectedPhotos] = useReducer<
     (
       state: Array<Basic['urls']['raw']>,
-      photoURL: Basic['urls']['raw']
+      action:
+        | { type: 'manipulate'; photoURL: Basic['urls']['raw'] }
+        | {
+            type: 'clear';
+            photoURL?: never;
+          }
     ) => Array<Basic['urls']['raw']>
-  >((state, photoURL) => {
-    const type = state.includes(photoURL) ? 'remove' : 'add';
+  >((state, action) => {
+    switch (action.type) {
+      case 'manipulate':
+        if (state.includes(action.photoURL)) {
+          return state.filter(photo => photo !== action.photoURL);
+        }
 
-    switch (type) {
-      case 'add':
-        return state.concat(photoURL);
-      case 'remove':
-        return state.filter(photo => photo !== photoURL);
+        return state.concat(action.photoURL);
+      case 'clear':
+        return [];
       default:
         return state;
     }
@@ -52,8 +61,14 @@ const Carousel = ({ photos }: CarouselProps) => {
   };
 
   const handleSelection = (url: string) => {
-    updateSelectedPhotos(url);
+    updateSelectedPhotos({ type: 'manipulate', photoURL: url });
   };
+
+  const handleDeselection = () => {
+    updateSelectedPhotos({ type: 'clear' });
+  };
+
+  const handleDownload = () => {};
 
   const getImageElement = (photo: Basic, key?: string) => {
     return (
@@ -66,7 +81,10 @@ const Carousel = ({ photos }: CarouselProps) => {
           right={0}
           margin={1}
           borderRadius={2}>
-          <Checkbox onChange={() => handleSelection(photo.urls.raw)} />
+          <Checkbox
+            checked={selectedPhotos.includes(photo.urls.raw)}
+            onChange={() => handleSelection(photo.urls.raw)}
+          />
         </Box>
         <StyledImage
           className="photo"
@@ -80,25 +98,38 @@ const Carousel = ({ photos }: CarouselProps) => {
   };
 
   return (
-    <Grid2 container flex={1} spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-      {globalState.masonryLikeEnabled
-        ? processData(photos).map((column, i) => (
-            <Grid2
-              key={i}
-              display="flex"
-              flexDirection="column"
-              gap={4}
-              flex={1}
-              position="relative">
-              {column.map(photo => getImageElement(photo, photo.id))}
-            </Grid2>
-          ))
-        : photos?.results.map(photo => (
-            <Grid2 key={photo.id} size={{ xs: 4, sm: 4, md: 4 }}>
-              {getImageElement(photo)}
-            </Grid2>
-          ))}
-    </Grid2>
+    <>
+      <Grid2 container flex={1} spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+        {globalState.masonryLikeEnabled
+          ? processData(photos).map((column, i) => (
+              <Grid2
+                key={i}
+                display="flex"
+                flexDirection="column"
+                gap={4}
+                flex={1}
+                position="relative">
+                {column.map(photo => getImageElement(photo, photo.id))}
+              </Grid2>
+            ))
+          : photos?.results.map(photo => (
+              <Grid2 key={photo.id} size={{ xs: 4, sm: 4, md: 4 }}>
+                {getImageElement(photo)}
+              </Grid2>
+            ))}
+      </Grid2>
+      {selectedPhotos.length > 0 && (
+        <Box position="fixed" bottom={16} right={16} display="flex" gap={1}>
+          <Fab variant="extended" color="primary" onClick={handleDownload}>
+            <DownloadIcon sx={{ mr: 1 }} />
+            Download {selectedPhotos.length}
+          </Fab>
+          <Fab color="primary" size="medium" onClick={handleDeselection}>
+            <CancelIcon />
+          </Fab>
+        </Box>
+      )}
+    </>
   );
 };
 
