@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resplash-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: resplash
+  template:
+    metadata:
+      labels:
+        app: resplash
+    spec:
+      containers:
+      - name: resplash-container
+        image: resplashacr.azurecr.io/resplash:latest
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - configMapRef:
+            name: resplash-config
+        env:
+          - name: ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: resplash-secrets
+                key: ACCESS_KEY
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: resplash-secrets
+                key: SECRET_KEY
+          - name: REDIRECT_URI
+            valueFrom:
+              configMapKeyRef:
+                name: resplash-config
+                key: REDIRECT_URI
