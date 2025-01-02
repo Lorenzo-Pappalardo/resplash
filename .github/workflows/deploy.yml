@@ -71,6 +71,10 @@ jobs:
       - name: Configure kubectl
         run: |
           az aks get-credentials --resource-group SistemiCloud --name resplash-k8s
+
+      - name: List repository files
+        run: ls -R
+
   
       # Applica i file YAML per sincronizzare Kubernetes
       - name: Apply Kubernetes manifests
