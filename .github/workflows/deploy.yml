@@ -73,8 +73,13 @@ jobs:
           az aks get-credentials --resource-group SistemiCloud --name resplash-k8s
 
       # Applica i file YAML per sincronizzare Kubernetes
+      - name: Print working directory
+        run: pwd
+      
+      - name: List files in the directory
+        run: ls -R
+      
       - name: Apply Kubernetes manifests
         run: |
-          ls ../k8s
-          kubectl apply -f ./k8s/resplash-deployment.yaml
-          kubectl apply -f ./k8s/resplash-service.yaml
+          kubectl apply -f ../k8s/resplash-deployment.yaml
+          kubectl apply -f ../k8s/resplash-service.yaml
