@@ -42,24 +42,28 @@ const MainContent = () => {
       }
     };
 
-    const placeholders: Array<any> = new Array(20).fill(0).reduce((acc, _, i) => {
-      acc.push({
-        id: (Math.random() * 1000).toString(8) + i,
+    // fillWithPlaceholders();
+
+    fetchData();
+  }, [page, pageSize, searchKeyword]);
+
+  const fillWithPlaceholders = () => {
+    const placeholders: Array<any> = [];
+
+    for (let i = 0; i < 20; i++) {
+      placeholders.push({
+        id: (i * 1 ** 5).toString(8),
         urls: {
           regular: 'https://placehold.co/600x400'
         }
       });
-
-      return acc;
-    }, []);
+    }
 
     setPhotos({
       results: placeholders,
       total: placeholders.length
     });
-
-    fetchData();
-  }, [page, pageSize, searchKeyword]);
+  };
 
   const onSnackbarClose = () => {
     setError('');
