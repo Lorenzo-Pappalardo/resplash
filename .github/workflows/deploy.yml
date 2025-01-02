@@ -81,5 +81,5 @@ jobs:
       
       - name: Apply Kubernetes manifests
         run: |
-          kubectl apply -f ../k8s/resplash-deployment.yaml
-          kubectl apply -f ../k8s/resplash-service.yaml
+          kubectl apply -f /resplash-deployment.yaml
+          kubectl apply -f /resplash-service.yaml
