@@ -79,7 +79,6 @@ jobs:
       - name: List files in the directory
         run: ls -R
       
-      - name: Apply Kubernetes manifests
-        run: |
-          kubectl apply -f /resplash-deployment.yaml
-          kubectl apply -f /resplash-service.yaml
+      - name: Update and apply kubernetes configuration files
+        uses: swdotcom/update-and-apply-kubernetes-configs@v1.3.0
+            
