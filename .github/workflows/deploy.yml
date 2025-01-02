@@ -59,21 +59,22 @@ jobs:
     name: Sync Kubernetes
     needs: build-and-push
     runs-on: ubuntu-latest
-
+  
     steps:
       # Login ad Azure
       - name: Login to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+  
       # Configura kubectl per Kubernetes
       - name: Configure kubectl
         run: |
           az aks get-credentials --resource-group SistemiCloud --name resplash-k8s
-
-      # Aggiorna l'immagine nel deployment Kubernetes
-      - name: Update Kubernetes deployment with new image
+  
+      # Applica i file YAML per sincronizzare Kubernetes
+      - name: Apply Kubernetes manifests
         run: |
-          kubectl set image deployment/resplash-deployment resplash-container=resplashacr.azurecr.io/resplash:latest --record
-          kubectl rollout status deployment/resplash-deployment
+          kubectl apply -f ./k8s/resplash-deployment.yaml
+          kubectl apply -f ./k8s/resplash-service.yaml
+
