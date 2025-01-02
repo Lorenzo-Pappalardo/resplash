@@ -1,9 +1,9 @@
-name: Build and Deploy to Azure
+name: Build, Deploy to ACI, and Sync Kubernetes
 
 on:
   push:
     branches:
-      - main  # Esegui la pipeline quando viene aggiornato il branch "main"
+      - main
 
 jobs:
   build-and-push:
@@ -11,48 +11,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout del codice
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Login ad Azure Container Registry (ACR)
       - name: Login to Azure Container Registry
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # Autentica Docker con ACR usando USERNAME e PASSWORD
       - name: Docker login to ACR
         run: docker login resplashacr.azurecr.io -u ${{ secrets.AZURE_REGISTRY_USERNAME }} -p ${{ secrets.AZURE_REGISTRY_PASSWORD }}
 
-      # Build e Push dell'immagine Docker su ACR
       - name: Build and push Docker image
         env:
           AZURE_REGISTRY: resplashacr
         run: |
-          echo "Directory di lavoro corrente:"
-          pwd
-          echo "Elenco dei file nella directory di lavoro:"
-          ls -la
-          echo "Tentativo di build dell'immagine Docker..."
           docker buildx build --platform linux/amd64 --tag resplashacr.azurecr.io/resplash:latest --push .
 
   deploy:
     name: Deploy to Azure Container Instances
-    needs: build-and-push # Esegui il deploy solo dopo il completamento del build
+    needs: build-and-push
     runs-on: ubuntu-latest
 
     steps:
-      # Login ad Azure per il deploy
       - name: Login to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: true
           allow-no-subscriptions: true
-          azcliversion: 'latest' # Forza l'utilizzo della versione più recente
+          azcliversion: 'latest'
 
-      # Aggiorna il container su Azure Container Instances
       - name: Deploy to Azure Container Instances
         run: |
           az container create \
@@ -65,3 +54,26 @@ jobs:
             --os-type Linux \
             --registry-username ${{ secrets.AZURE_REGISTRY_USERNAME }} \
             --registry-password ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+
+  sync-k8s:
+    name: Sync Kubernetes
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      # Login ad Azure
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Configura kubectl per Kubernetes
+      - name: Configure kubectl
+        run: |
+          az aks get-credentials --resource-group SistemiCloud --name resplash-k8s
+
+      # Aggiorna l'immagine nel deployment Kubernetes
+      - name: Update Kubernetes deployment with new image
+        run: |
+          kubectl set image deployment/resplash-deployment resplash-container=resplashacr.azurecr.io/resplash:latest --record
+          kubectl rollout status deployment/resplash-deployment
