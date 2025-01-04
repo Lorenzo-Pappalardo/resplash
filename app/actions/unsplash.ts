@@ -152,3 +152,21 @@ export const likePhoto = async (id: string) =>
 
 export const unlikePhoto = async (id: string) =>
   (await UnsplashClient.instance.getClient()).unlikePhoto(id);
+
+export const downloadPhotos = async (urls: ReadonlyArray<string>) => {
+  if (process.env.ENABLE_DOWNLOAD) {
+    const res = await fetch(`${process.env.DOWNLOAD_SERVER_ADDRESS}/download`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(urls)
+    });
+
+    if (res.ok) {
+      return `${process.env.DOWNLOAD_SERVER_ADDRESS}/download/${await res.text()}`;
+    }
+  }
+
+  return undefined;
+};

@@ -7,7 +7,7 @@ import { Box, Checkbox, Fab, Grid2 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useReducer } from 'react';
 import { Basic } from 'unsplash-js/dist/methods/photos/types';
-import { searchPhotos } from '../actions/unsplash';
+import { downloadPhotos, searchPhotos } from '../actions/unsplash';
 import useGlobalStore from '../state';
 
 const Carousel = ({ photos }: CarouselProps) => {
@@ -68,7 +68,13 @@ const Carousel = ({ photos }: CarouselProps) => {
     updateSelectedPhotos({ type: 'clear' });
   };
 
-  const handleDownload = () => {};
+  const handleDownload = async () => {
+    const downloadURL = await downloadPhotos(selectedPhotos);
+
+    if (downloadURL !== undefined) {
+      window.open(downloadURL, '_blank', 'noreferrer');
+    }
+  };
 
   const getImageElement = (photo: Basic, key?: string) => {
     return (
