@@ -5,7 +5,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import DownloadIcon from '@mui/icons-material/Download';
 import { Box, Checkbox, Fab, Grid2 } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useReducer } from 'react';
+import { useReducer, useState } from 'react';
 import { Basic } from 'unsplash-js/dist/methods/photos/types';
 import { downloadPhotos, searchPhotos } from '../actions/unsplash';
 import useGlobalStore from '../state';
@@ -37,6 +37,7 @@ const Carousel = ({ photos }: CarouselProps) => {
         return state;
     }
   }, []);
+  const [downloadEnabled, _] = useState(process.env.NEXT_PUBLIC_ENABLE_DOWNLOAD === 'true');
 
   const processData = (data: typeof photos, columnsCount: number = 3) => {
     if (data === undefined) {
@@ -69,6 +70,10 @@ const Carousel = ({ photos }: CarouselProps) => {
   };
 
   const handleDownload = async () => {
+    if (!downloadEnabled) {
+      return;
+    }
+
     const downloadURL = await downloadPhotos(selectedPhotos);
 
     if (downloadURL !== undefined) {
@@ -77,6 +82,20 @@ const Carousel = ({ photos }: CarouselProps) => {
   };
 
   const getImageElement = (photo: Basic, key?: string) => {
+    const photoElement = (
+      <StyledImage
+        className="photo"
+        src={photo.urls.regular}
+        alt={photo.description ?? photo.id}
+        onClick={() => {
+          handleOnClick(photo.id);
+        }}></StyledImage>
+    );
+
+    if (!downloadEnabled) {
+      return photoElement;
+    }
+
     return (
       <StyledBox selected={selectedPhotos.includes(photo.urls.raw)} key={key} position="relative">
         <Box
@@ -92,13 +111,7 @@ const Carousel = ({ photos }: CarouselProps) => {
             onChange={() => handleSelection(photo.urls.raw)}
           />
         </Box>
-        <StyledImage
-          className="photo"
-          src={photo.urls.regular}
-          alt={photo.description ?? photo.id}
-          onClick={() => {
-            handleOnClick(photo.id);
-          }}></StyledImage>
+        {photoElement}
       </StyledBox>
     );
   };
@@ -124,7 +137,7 @@ const Carousel = ({ photos }: CarouselProps) => {
               </Grid2>
             ))}
       </Grid2>
-      {selectedPhotos.length > 0 && (
+      {downloadEnabled && selectedPhotos.length > 0 && (
         <Box position="fixed" bottom={16} right={16} display="flex" gap={1}>
           <Fab variant="extended" color="primary" onClick={handleDownload}>
             <DownloadIcon sx={{ mr: 1 }} />
@@ -151,6 +164,8 @@ const StyledBox = styled(Box)<{ selected: boolean }>(({ selected }) => ({
   },
 
   '> .photo': {
+    borderWidth: '2px',
+    borderStyle: 'solid',
     borderColor: selected ? 'yellow' : 'transparent'
   },
 
@@ -168,7 +183,5 @@ const StyledBox = styled(Box)<{ selected: boolean }>(({ selected }) => ({
 const StyledImage = styled.img`
   width: 100%;
   cursor: pointer;
-  border-width: 2px;
-  border-style: solid;
   padding: 2px;
 `;
