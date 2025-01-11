@@ -40,12 +40,12 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  AZURE_CONTAINER_REGISTRY: "your-azure-container-registry"
-  CONTAINER_NAME: "your-container-name"
-  RESOURCE_GROUP: "your-resource-group"
-  CLUSTER_NAME: "your-cluster-name"
-  CHART_PATH: "./helm/"
+#env:
+  # AZURE_CONTAINER_REGISTRY: "your-azure-container-registry"
+  # CONTAINER_NAME: "your-container-name"
+  # RESOURCE_GROUP: "your-resource-group"
+  # CLUSTER_NAME: "your-cluster-name"
+  # CHART_PATH: "./helm/"
   # CHART_OVERRIDE_PATH: "your-chart-override-path"
 
 jobs:
@@ -69,7 +69,7 @@ jobs:
       # Builds and pushes an image up to your Azure Container Registry
       - name: Build and push image to ACR
         run: |
-          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} .
+          az acr build --image ${{ vars.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ vars.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ vars.AZURE_CONTAINER_REGISTRY }} -g ${{ vars.RESOURCE_GROUP }} .
 
   deploy:
     permissions:
@@ -100,8 +100,8 @@ jobs:
       - name: Get K8s context
         uses: azure/aks-set-context@v3
         with:
-          resource-group: ${{ env.RESOURCE_GROUP }}
-          cluster-name: ${{ env.CLUSTER_NAME }}
+          resource-group: ${{ vars.RESOURCE_GROUP }}
+          cluster-name: ${{ vars.CLUSTER_NAME }}
           admin: 'false'
           use-kubelogin: 'true'
 
@@ -110,8 +110,8 @@ jobs:
         uses: azure/k8s-bake@v2
         with:
           renderEngine: "helm"
-          helmChart: ${{ env.CHART_PATH }}
-          # overrideFiles: ${{ env.CHART_OVERRIDE_PATH }}
+          helmChart: ${{ vars.CHART_PATH }}
+          # overrideFiles: ${{ vars.CHART_OVERRIDE_PATH }}
           # overrides: |
             # replicas:2
           helm-version: "latest"
@@ -124,4 +124,4 @@ jobs:
           action: deploy
           manifests: ${{ steps.bake.outputs.manifestsBundle }}
           images: |
-            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+            ${{ vars.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ vars.CONTAINER_NAME }}:${{ github.sha }}
