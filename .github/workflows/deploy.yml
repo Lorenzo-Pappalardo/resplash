@@ -1,0 +1,75 @@
+name: Build, Deploy to ACI, and Sync Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Azure Container Registry
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Docker login to ACR
+        run: docker login resplashacr.azurecr.io -u ${{ secrets.AZURE_REGISTRY_USERNAME }} -p ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+
+      - name: Build and push Docker image
+        env:
+          AZURE_REGISTRY: resplashacr
+        run: |
+          docker buildx build --platform linux/amd64 --tag resplashacr.azurecr.io/resplash:latest --push .
+
+  deploy:
+    name: Deploy to Azure Container Instances
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+          allow-no-subscriptions: true
+          azcliversion: 'latest'
+
+      - name: Deploy to Azure Container Instances
+        run: |
+          az container create \
+            --resource-group SistemiCloud \
+            --name resplash-aci-container \
+            --image resplashacr.azurecr.io/resplash:latest \
+            --restart-policy Always \
+            --cpu 1 \
+            --memory 1.5 \
+            --os-type Linux \
+            --registry-username ${{ secrets.AZURE_REGISTRY_USERNAME }} \
+            --registry-password ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+
+  sync-k8s:
+    name: Sync Kubernetes
+    needs: build-and-push
+    runs-on: ubuntu-latest
+  
+    steps:
+      # Login ad Azure
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+  
+      # Configura kubectl per Kubernetes
+      - name: Configure kubectl
+        run: |
+          az aks get-credentials --resource-group SistemiCloud --name resplash-k8s
+
+            
