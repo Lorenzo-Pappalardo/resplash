@@ -40,12 +40,12 @@ on:
       - main
   workflow_dispatch:
 
-#env:
+env:
 # AZURE_CONTAINER_REGISTRY: "your-azure-container-registry"
 # CONTAINER_NAME: "your-container-name"
 # RESOURCE_GROUP: "your-resource-group"
 # CLUSTER_NAME: "your-cluster-name"
-# CHART_PATH: "./helm/"
+CHART_PATH: "./helm/"
 # CHART_OVERRIDE_PATH: "your-chart-override-path"
 
 jobs:
@@ -130,8 +130,8 @@ jobs:
         uses: azure/k8s-bake@v2
         with:
           renderEngine: 'helm'
-          helmChart: ${{ vars.CHART_PATH }}
-          # overrideFiles: ${{ vars.CHART_OVERRIDE_PATH }}
+          helmChart: ${{ env.CHART_PATH }}
+          # overrideFiles: ${{ env.CHART_OVERRIDE_PATH }}
           # overrides: |
           # replicas:2
           helm-version: 'latest'
