@@ -41,12 +41,12 @@ on:
   workflow_dispatch:
 
 #env:
-  # AZURE_CONTAINER_REGISTRY: "your-azure-container-registry"
-  # CONTAINER_NAME: "your-container-name"
-  # RESOURCE_GROUP: "your-resource-group"
-  # CLUSTER_NAME: "your-cluster-name"
-  # CHART_PATH: "./helm/"
-  # CHART_OVERRIDE_PATH: "your-chart-override-path"
+# AZURE_CONTAINER_REGISTRY: "your-azure-container-registry"
+# CONTAINER_NAME: "your-container-name"
+# RESOURCE_GROUP: "your-resource-group"
+# CLUSTER_NAME: "your-cluster-name"
+# CHART_PATH: "./helm/"
+# CHART_OVERRIDE_PATH: "your-chart-override-path"
 
 jobs:
   buildImage:
@@ -68,12 +68,24 @@ jobs:
 
       # Logs in the Azure Container Registry
       - name: Azure login to ACR
-        run: az acr login --name ${{ vars.AZURE_CONTAINER_REGISTRY }} --expose-token
+        run: az acr login --name ${{ vars.AZURE_CONTAINER_REGISTRY }}
+
+      # Tags an image in the Azure Container Registry
+      - name: Docker tag
+        run: docker tag ${{ vars.CONTAINER_NAME }}:${{ github.sha }} ${{ vars.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ vars.CONTAINER_NAME }}:${{ github.sha }}
+
+      # Push an image to the Azure Container Registry
+      - name: Docker push
+        run: docker push ${{ vars.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ vars.CONTAINER_NAME }}:${{ github.sha }}
+
+      # Lists available images in the Azure Container Registry
+      - name: List images in ACR
+        run: az acr repository list --name ${{ vars.AZURE_CONTAINER_REGISTRY }}
 
       # Builds and pushes an image up to your Azure Container Registry
-      - name: Build and push image to ACR
-        run: |
-          az acr build --debug --image ${{ vars.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ vars.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ vars.AZURE_CONTAINER_REGISTRY }} -g ${{ vars.RESOURCE_GROUP }} .
+      # - name: Build and push image to ACR
+        # run: |
+          # az acr build --debug --image ${{ vars.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ vars.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ vars.AZURE_CONTAINER_REGISTRY }} -g ${{ vars.RESOURCE_GROUP }} .
 
   deploy:
     permissions:
@@ -113,12 +125,12 @@ jobs:
       - name: Bake deployment
         uses: azure/k8s-bake@v2
         with:
-          renderEngine: "helm"
+          renderEngine: 'helm'
           helmChart: ${{ vars.CHART_PATH }}
           # overrideFiles: ${{ vars.CHART_OVERRIDE_PATH }}
           # overrides: |
-            # replicas:2
-          helm-version: "latest"
+          # replicas:2
+          helm-version: 'latest'
         id: bake
 
       # Deploys application based on manifest files from previous step
