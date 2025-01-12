@@ -70,6 +70,10 @@ jobs:
       - name: Azure login to ACR
         run: az acr login --name ${{ vars.AZURE_CONTAINER_REGISTRY }}
 
+      # Builds the image
+      - name: Docker build
+        run: docker build . -t ${{ vars.CONTAINER_NAME }}:${{ github.sha }}
+
       # Tags an image in the Azure Container Registry
       - name: Docker tag
         run: docker tag ${{ vars.CONTAINER_NAME }}:${{ github.sha }} ${{ vars.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ vars.CONTAINER_NAME }}:${{ github.sha }}
