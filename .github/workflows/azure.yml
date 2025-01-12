@@ -68,7 +68,7 @@ jobs:
 
       # Logs in the Azure Container Registry
       - name: Azure login to ACR
-        run: az acr login --name ${{ vars.AZURE_CONTAINER_REGISTRY }} --password ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}} -g ${{ vars.RESOURCE_GROUP }}
+        run: az acr login --name ${{ vars.AZURE_CONTAINER_REGISTRY }} --username ${{ vars.AZURE_CONTAINER_REGISTRY }} --password ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}} -g ${{ vars.RESOURCE_GROUP }}
 
       # Builds and pushes an image up to your Azure Container Registry
       - name: Build and push image to ACR
