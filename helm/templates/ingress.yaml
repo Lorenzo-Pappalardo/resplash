@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: {{ .Values.ingressRule.name }}
 spec:
-  ingressClassName: resplash
+  ingressClassName: nginx
   rules:
   - http:
       paths:
