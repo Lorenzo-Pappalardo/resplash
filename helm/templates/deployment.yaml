@@ -48,9 +48,9 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           envFrom:
             - configMapRef:
-              name: {{ include "helm.fullname" . }}-config-maps
+                name: {{ include "helm.fullname" . }}-config-maps
             - secretRef:
-              name: {{ include "helm.fullname" . }}-secrets
+                name: {{ include "helm.fullname" . }}-secrets
           {{- with .Values.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}
