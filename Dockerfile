@@ -30,6 +30,9 @@ COPY . .
 # Enables the "standalone" output
 RUN rm next.config.ts && mv next.config.docker.ts next.config.ts
 
+ARG NEXT_PUBLIC_ENABLE_DOWNLOAD
+RUN echo $NEXT_PUBLIC_ENABLE_DOWNLOAD
+
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
@@ -60,9 +63,6 @@ USER nextjs
 EXPOSE 3000
 
 ENV PORT=3000
-ARG NEXT_PUBLIC_ENABLE_DOWNLOAD
-
-RUN echo $NEXT_PUBLIC_ENABLE_DOWNLOAD
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/config/next-config-js/output
