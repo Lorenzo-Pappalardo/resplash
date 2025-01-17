@@ -31,7 +31,6 @@ COPY . .
 RUN rm next.config.ts && mv next.config.docker.ts next.config.ts
 
 ARG NEXT_PUBLIC_ENABLE_DOWNLOAD
-RUN echo $NEXT_PUBLIC_ENABLE_DOWNLOAD
 
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
