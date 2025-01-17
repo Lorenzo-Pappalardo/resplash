@@ -60,7 +60,7 @@ USER nextjs
 EXPOSE 3000
 
 ENV PORT=3000
-ENV NEXT_PUBLIC_ENABLE_DOWNLOAD=$ENABLE_DOWNLOAD
+ARG NEXT_PUBLIC_ENABLE_DOWNLOAD
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/config/next-config-js/output

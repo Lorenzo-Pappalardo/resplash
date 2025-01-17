@@ -72,7 +72,7 @@ jobs:
 
       # Builds the image
       - name: Docker build
-        run: docker build . -t ${{ vars.CONTAINER_NAME }}:${{ github.sha }}
+        run: docker build --build-arg NEXT_PUBLIC_ENABLE_DOWNLOAD=${{ vars.ENABLE_DOWNLOAD }} -t ${{ vars.CONTAINER_NAME }}:${{ github.sha }} .
 
       # Tags an image in the Azure Container Registry
       - name: Docker tag
