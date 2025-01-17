@@ -133,11 +133,11 @@ jobs:
           helmChart: ${{ env.CHART_PATH }}
           # overrideFiles: ${{ env.CHART_OVERRIDE_PATH }}
           overrides: |
-            configMaps.NEXT_PUBLIC_ENABLE_DOWNLOAD=${{ vars.ENABLE_DOWNLOAD }}
-            secrets.ACCESS_KEY=${{ secrets.ACCESS_KEY }}
-            secrets.SECRET_KEY=${{ secrets.SECRET_KEY }}
-            configMaps.REDIRECT_URI=${{ vars.REDIRECT_URI }}
-            configMaps.DOWNLOAD_SERVER_ADDRESS=${{ vars.DOWNLOAD_SERVER_ADDRESS }}
+            configMaps.NEXT_PUBLIC_ENABLE_DOWNLOAD:${{ vars.ENABLE_DOWNLOAD }}
+            secrets.ACCESS_KEY:${{ secrets.ACCESS_KEY }}
+            secrets.SECRET_KEY:${{ secrets.SECRET_KEY }}
+            configMaps.REDIRECT_URI:${{ vars.REDIRECT_URI }}
+            configMaps.DOWNLOAD_SERVER_ADDRESS:${{ vars.DOWNLOAD_SERVER_ADDRESS }}
         id: bake
 
       # Deploys application based on manifest files from previous step
