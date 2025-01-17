@@ -3,7 +3,7 @@
 import styled from '@emotion/styled';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DownloadIcon from '@mui/icons-material/Download';
-import { Box, Checkbox, Fab, Grid2 } from '@mui/material';
+import { Alert, Box, Checkbox, Fab, Grid2, Snackbar } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useReducer, useState } from 'react';
 import { Basic } from 'unsplash-js/dist/methods/photos/types';
@@ -38,6 +38,7 @@ const Carousel = ({ photos }: CarouselProps) => {
     }
   }, []);
   const [downloadEnabled, _] = useState(process.env.NEXT_PUBLIC_ENABLE_DOWNLOAD === 'true');
+  const [error, setError] = useState('');
 
   const processData = (data: typeof photos, columnsCount: number = 3) => {
     if (data === undefined) {
@@ -78,7 +79,13 @@ const Carousel = ({ photos }: CarouselProps) => {
 
     if (downloadURL !== undefined) {
       window.open(downloadURL, '_blank', 'noreferrer');
+    } else {
+      setError('Error downloading photos');
     }
+  };
+
+  const onSnackbarClose = () => {
+    setError('');
   };
 
   const getImageElement = (photo: Basic, key?: string) => {
@@ -148,6 +155,15 @@ const Carousel = ({ photos }: CarouselProps) => {
           </Fab>
         </Box>
       )}
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        autoHideDuration={5000}
+        open={error.length > 0}
+        onClose={onSnackbarClose}>
+        <Alert onClose={onSnackbarClose} severity="error" variant="filled">
+          {error}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
