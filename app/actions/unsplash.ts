@@ -154,7 +154,7 @@ export const unlikePhoto = async (id: string) =>
   (await UnsplashClient.instance.getClient()).unlikePhoto(id);
 
 export const downloadPhotos = async (urls: ReadonlyArray<string>) => {
-  if (process.env.ENABLE_DOWNLOAD) {
+  if (process.env.NEXT_PUBLIC_ENABLE_DOWNLOAD) {
     const res = await fetch(`${process.env.DOWNLOAD_SERVER_ADDRESS}/download`, {
       method: 'POST',
       headers: {
