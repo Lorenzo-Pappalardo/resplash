@@ -155,16 +155,23 @@ export const unlikePhoto = async (id: string) =>
 
 export const downloadPhotos = async (urls: ReadonlyArray<string>) => {
   if (process.env.NEXT_PUBLIC_ENABLE_DOWNLOAD) {
-    const res = await fetch(`${process.env.DOWNLOAD_SERVER_ADDRESS}/download`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(urls)
-    });
+    const downloadURL = `${process.env.DOWNLOAD_SERVER_ADDRESS}/download`;
+    let res;
 
-    if (res.ok) {
-      return `${process.env.DOWNLOAD_SERVER_ADDRESS}/download/${await res.text()}`;
+    try {
+      res = await fetch(downloadURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(urls)
+      });
+
+      if (res.ok) {
+        return `${downloadURL}/${await res.text()}`;
+      }
+    } catch {
+      console.error(`Request to ${downloadURL} failed`);
     }
   }
 
