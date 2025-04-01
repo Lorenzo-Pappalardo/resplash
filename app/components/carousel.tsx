@@ -3,7 +3,7 @@
 import styled from '@emotion/styled';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DownloadIcon from '@mui/icons-material/Download';
-import { Alert, Box, Checkbox, Fab, Grid2, Snackbar } from '@mui/material';
+import { Alert, Box, Checkbox, Fab, Grid, Snackbar } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useReducer, useState } from 'react';
 import { Basic } from 'unsplash-js/dist/methods/photos/types';
@@ -105,18 +105,8 @@ const Carousel = ({ photos }: CarouselProps) => {
 
     return (
       <StyledBox selected={selectedPhotos.includes(photo.urls.raw)} key={key} position="relative">
-        <Box
-          className="checkbox"
-          position={'absolute'}
-          zIndex={1}
-          top={0}
-          right={0}
-          margin={1}
-          borderRadius={2}>
-          <Checkbox
-            checked={selectedPhotos.includes(photo.urls.raw)}
-            onChange={() => handleSelection(photo.urls.raw)}
-          />
+        <Box className="checkbox" position={'absolute'} zIndex={1} top={0} right={0} margin={1} borderRadius={2}>
+          <Checkbox checked={selectedPhotos.includes(photo.urls.raw)} onChange={() => handleSelection(photo.urls.raw)} />
         </Box>
         {photoElement}
       </StyledBox>
@@ -125,25 +115,19 @@ const Carousel = ({ photos }: CarouselProps) => {
 
   return (
     <>
-      <Grid2 container flex={1} spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+      <Grid container flex={1} spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
         {globalState.masonryLikeEnabled
           ? processData(photos).map((column, i) => (
-              <Grid2
-                key={i}
-                display="flex"
-                flexDirection="column"
-                gap={4}
-                flex={1}
-                position="relative">
+              <Grid key={i} display="flex" flexDirection="column" gap={4} flex={1} position="relative">
                 {column.map(photo => getImageElement(photo, photo.id))}
-              </Grid2>
+              </Grid>
             ))
           : photos?.results.map(photo => (
-              <Grid2 key={photo.id} size={{ xs: 4, sm: 4, md: 4 }}>
+              <Grid key={photo.id} size={{ xs: 4, sm: 4, md: 4 }}>
                 {getImageElement(photo)}
-              </Grid2>
+              </Grid>
             ))}
-      </Grid2>
+      </Grid>
       {downloadEnabled && selectedPhotos.length > 0 && (
         <Box position="fixed" bottom={16} right={16} display="flex" gap={1}>
           <Fab variant="extended" color="primary" onClick={handleDownload}>
